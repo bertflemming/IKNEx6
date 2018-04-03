@@ -25,6 +25,13 @@ namespace tcp
 		private file_client (string[] args)
 		{
 			// TO DO Your own code
+		    TcpClient clientSocket = new TcpClient();
+
+            Console.WriteLine("Client started");
+            clientSocket.Connect(args[0], PORT);
+            Console.WriteLine("Server connected");
+
+		    NetworkStream serverStream = clientSocket.GetStream();
 		}
 
 		/// <summary>
@@ -39,6 +46,7 @@ namespace tcp
 		private void receiveFile (String fileName, NetworkStream io)
 		{
 			// TO DO Your own code
+
 		}
 
 		/// <summary>

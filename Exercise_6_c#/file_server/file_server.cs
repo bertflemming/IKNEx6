@@ -28,6 +28,46 @@ namespace tcp
 		private file_server ()
 		{
 			// TO DO Your own code
+
+            TcpListener serverSocket = new TcpListener(PORT);
+            serverSocket.Start();
+            Console.WriteLine("Server started");
+
+
+            while (true)
+		    {
+		        try
+		        {
+		            TcpClient clientSocket = serverSocket.AcceptTcpClient();
+		            Console.WriteLine("Accept connection from client");
+                    NetworkStream networkStream = clientSocket.GetStream();
+		            string fileName = LIB.readTextTCP(networkStream);
+		            long fileSize = LIB.check_File_Exists(fileName);
+
+		            if (fileSize == 0)
+		            {
+		                Console.WriteLine("File does not exist");
+		            }
+		            else
+		            {
+		                LIB.writeTextTCP(networkStream, fileSize.ToString());
+
+		                sendFile(fileName, fileSize, networkStream);
+
+		                Console.WriteLine("File send");
+                    }
+
+                    clientSocket.Close();
+                    networkStream.Close();
+
+		        }
+		        catch (Exception e)
+		        {
+		            Console.WriteLine(e.ToString());
+		        }
+		    }
+
+
 		}
 
 		/// <summary>
@@ -45,6 +85,18 @@ namespace tcp
 		private void sendFile (String fileName, long fileSize, NetworkStream io)
 		{
 			// TO DO Your own code
+            FileStream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read);
+            byte[] sendBytes = new byte[BUFSIZE];
+		    int send = 0;
+
+		    while (send < fileSize)
+		    {
+		        int read = fs.Read(sendBytes, 0, BUFSIZE);
+		        io.Write(sendBytes, 0, read);
+		        send += read;
+		    }
+
+            fs.Close();
 		}
 
 		/// <summary>
